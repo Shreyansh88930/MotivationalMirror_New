@@ -12,7 +12,7 @@ import {
   serverTimestamp,
 } from 'firebase/firestore';
 import { getAuth, signInWithEmailAndPassword, signOut } from 'firebase/auth';
-import { app } from '../lib/firebase';
+import { app } from '../client/src/lib/firebase';
 
 const db = getFirestore(app);
 const auth = getAuth(app);
