@@ -50,7 +50,7 @@ const Contact = () => {
   return (
     <div className="min-h-screen bg-cream dark:bg-charcoal">
       <Navbar />
-      
+
       {/* Hero Section */}
       <section className="bg-gradient-to-r from-sky-blue/20 via-soft-beige/30 to-cream dark:from-teal/20 dark:via-indigo/20 dark:to-charcoal py-20">
         <div className="container mx-auto px-4 text-center">
@@ -71,12 +71,8 @@ const Contact = () => {
               {/* Contact Form */}
               <Card className="shadow-xl">
                 <CardHeader>
-                  <CardTitle className="text-2xl font-bold font-devanagari">
-                    Send us a Message
-                  </CardTitle>
-                  <CardDescription>
-                    Fill out the form below and we'll get back to you as soon as possible.
-                  </CardDescription>
+                  <CardTitle className="text-2xl font-bold font-devanagari">Send us a Message</CardTitle>
+                  <CardDescription>Fill out the form below and we'll get back to you as soon as possible.</CardDescription>
                 </CardHeader>
                 <CardContent>
                   <form onSubmit={handleSubmit} className="space-y-6">
@@ -87,9 +83,9 @@ const Contact = () => {
                           id="name"
                           name="name"
                           type="text"
+                          required
                           value={formData.name}
                           onChange={handleChange}
-                          required
                           placeholder="Your full name"
                         />
                       </div>
@@ -99,9 +95,9 @@ const Contact = () => {
                           id="email"
                           name="email"
                           type="email"
+                          required
                           value={formData.email}
                           onChange={handleChange}
-                          required
                           placeholder="your@email.com"
                         />
                       </div>
@@ -113,9 +109,9 @@ const Contact = () => {
                         id="subject"
                         name="subject"
                         type="text"
+                        required
                         value={formData.subject}
                         onChange={handleChange}
-                        required
                         placeholder="What is this regarding?"
                       />
                     </div>
@@ -125,9 +121,9 @@ const Contact = () => {
                       <Textarea
                         id="message"
                         name="message"
+                        required
                         value={formData.message}
                         onChange={handleChange}
-                        required
                         placeholder="Tell us more about your inquiry..."
                         rows={6}
                       />
@@ -138,22 +134,12 @@ const Contact = () => {
                       disabled={isSubmitting}
                       className="w-full bg-sky-blue dark:bg-teal hover:bg-sky-blue/90 dark:hover:bg-teal/90"
                     >
-                      {isSubmitting ? (
-                        <>
-                          <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
-                          Sending...
-                        </>
-                      ) : (
-                        <>
-                          <Send className="mr-2 h-4 w-4" />
-                          Send Message
-                        </>
-                      )}
+                      <Send className="mr-2 h-4 w-4" />
+                      {isSubmitting ? 'Sending...' : 'Send Message'}
                     </Button>
                   </form>
                 </CardContent>
               </Card>
-
               {/* Contact Information */}
               <div className="space-y-8">
                 <Card className="shadow-lg">
@@ -172,8 +158,7 @@ const Contact = () => {
                       </div>
                       <div>
                         <h3 className="font-semibold">Email</h3>
-                        <p className="text-gray-600 dark:text-gray-400">contact@prerana.com</p>
-                        <p className="text-sm text-gray-500">We typically respond within 24 hours</p>
+                        <p className="text-gray-600 dark:text-gray-400">pyarelal50@gmail.com</p>
                       </div>
                     </div>
 
@@ -184,7 +169,6 @@ const Contact = () => {
                       <div>
                         <h3 className="font-semibold">Phone</h3>
                         <p className="text-gray-600 dark:text-gray-400">+91 (555) 123-4567</p>
-                        <p className="text-sm text-gray-500">Mon-Fri, 9AM-6PM IST</p>
                       </div>
                     </div>
 
@@ -195,53 +179,9 @@ const Contact = () => {
                       <div>
                         <h3 className="font-semibold">Address</h3>
                         <p className="text-gray-600 dark:text-gray-400">
-                          123 Inspiration Street<br />
-                          Motivation City, India 110001
+                          13-B Bhagwati Nagar<br />
+                          Kartarpura, Jaipur, Rajasthan
                         </p>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-
-                <Card className="shadow-lg">
-                  <CardHeader>
-                    <CardTitle className="text-xl font-bold font-devanagari">
-                      प्रेरणा के साथ जुड़ें
-                    </CardTitle>
-                    <CardDescription>
-                      Join our community and stay updated with daily motivation
-                    </CardDescription>
-                  </CardHeader>
-                  <CardContent>
-                    <div className="space-y-4">
-                      <p className="text-gray-600 dark:text-gray-400">
-                        Follow us on social media for daily inspiration and updates:
-                      </p>
-                      <div className="flex gap-4">
-                        <a
-                          href="#"
-                          className="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white hover:bg-blue-600 transition-colors"
-                        >
-                          <span className="font-bold">f</span>
-                        </a>
-                        <a
-                          href="#"
-                          className="w-10 h-10 bg-blue-400 rounded-full flex items-center justify-center text-white hover:bg-blue-500 transition-colors"
-                        >
-                          <span className="font-bold">T</span>
-                        </a>
-                        <a
-                          href="#"
-                          className="w-10 h-10 bg-pink-500 rounded-full flex items-center justify-center text-white hover:bg-pink-600 transition-colors"
-                        >
-                          <span className="font-bold">I</span>
-                        </a>
-                        <a
-                          href="#"
-                          className="w-10 h-10 bg-red-500 rounded-full flex items-center justify-center text-white hover:bg-red-600 transition-colors"
-                        >
-                          <span className="font-bold">Y</span>
-                        </a>
                       </div>
                     </div>
                   </CardContent>

@@ -1,83 +1,43 @@
 import React from 'react';
-import { Link } from 'wouter';
 import { Facebook, Twitter, Instagram, Youtube } from 'lucide-react';
 
 const Footer = () => {
   return (
-    <footer className="bg-gray-900 dark:bg-black text-white py-12">
-      <div className="container mx-auto px-4">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
-          <div className="col-span-1 md:col-span-2">
-            <h3 className="text-2xl font-bold font-devanagari mb-4">प्रेरणा</h3>
-            <p className="text-gray-300 mb-4">
-              Daily Hindi motivation to inspire and uplift your spirit. 
-              Join our community of dreamers and achievers.
-            </p>
-            <div className="flex space-x-4">
-              <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                <Facebook size={20} />
-              </a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                <Twitter size={20} />
-              </a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                <Instagram size={20} />
-              </a>
-              <a href="#" className="text-gray-400 hover:text-white transition-colors">
-                <Youtube size={20} />
-              </a>
-            </div>
-          </div>
-          
-          <div>
-            <h4 className="font-semibold mb-4">Quick Links</h4>
-            <ul className="space-y-2">
-              <li>
-                <Link href="/">
-                  <a className="text-gray-400 hover:text-white transition-colors">Home</a>
-                </Link>
-              </li>
-              <li>
-                <Link href="/posts">
-                  <a className="text-gray-400 hover:text-white transition-colors">All Posts</a>
-                </Link>
-              </li>
-              <li>
-                <Link href="/about">
-                  <a className="text-gray-400 hover:text-white transition-colors">About</a>
-                </Link>
-              </li>
-              <li>
-                <Link href="/contact">
-                  <a className="text-gray-400 hover:text-white transition-colors">Contact</a>
-                </Link>
-              </li>
-            </ul>
-          </div>
-          
-          <div>
-            <h4 className="font-semibold mb-4">Content</h4>
-            <ul className="space-y-2">
-              <li>
-                <a href="#" className="text-gray-400 hover:text-white transition-colors">Hindi Quotes</a>
-              </li>
-              <li>
-                <a href="#" className="text-gray-400 hover:text-white transition-colors">Motivational Images</a>
-              </li>
-              <li>
-                <a href="#" className="text-gray-400 hover:text-white transition-colors">Inspiring Videos</a>
-              </li>
-              <li>
-                <Link href="/admin/login">
-                  <a className="text-gray-400 hover:text-white transition-colors">Admin Login</a>
-                </Link>
-              </li>
-            </ul>
-          </div>
+    <footer className="bg-gradient-to-tr from-black via-gray-900 to-black text-white py-14 shadow-inner border-t border-gray-800">
+      <div className="container mx-auto px-4 text-center space-y-8">
+        {/* Logo and Description */}
+        <div className="space-y-4">
+          <h3 className="text-4xl font-bold font-devanagari text-yellow-400 tracking-widest drop-shadow">
+            प्रेरणा - नववितान
+          </h3>
+          <p className="text-gray-300 max-w-2xl mx-auto font-devanagari text-lg leading-relaxed">
+            प्रतिदिन एक नई ऊर्जा, एक नया विचार और जीवन को दिशा देने वाली हिंदी प्रेरणा।<br />
+            हमारे साथ जुड़िए और अपने दिन की शुरुआत आत्मबल और सकारात्मक सोच के साथ कीजिए।
+          </p>
         </div>
-        
-        <div className="border-t border-gray-800 mt-8 pt-8 text-center text-gray-400">
-          <p>&copy; 2024 प्रेरणा. All rights reserved. Made with ❤️ for motivation.</p>
+
+        {/* Social Icons */}
+        <div className="flex justify-center gap-6 mt-2">
+          <a href="#" className="hover:scale-125 transition-transform duration-300 text-yellow-400 hover:text-white">
+            <Facebook size={24} />
+          </a>
+          <a href="#" className="hover:scale-125 transition-transform duration-300 text-yellow-400 hover:text-white">
+            <Twitter size={24} />
+          </a>
+          <a href="#" className="hover:scale-125 transition-transform duration-300 text-yellow-400 hover:text-white">
+            <Instagram size={24} />
+          </a>
+          <a href="#" className="hover:scale-125 transition-transform duration-300 text-yellow-400 hover:text-white">
+            <Youtube size={24} />
+          </a>
+        </div>
+
+        {/* Divider and Bottom Text */}
+        <div className="border-t border-gray-800 pt-6 text-gray-400 font-devanagari text-sm">
+          <p>
+            &copy; 2024 <span className="text-white font-semibold">प्रेरणा - नववितान</span>। सर्वाधिकार सुरक्षित।<br />
+            ❤️ के साथ निर्मित भारत में।
+          </p>
         </div>
       </div>
     </footer>

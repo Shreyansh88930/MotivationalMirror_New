@@ -1,81 +1,95 @@
-import React, { useEffect } from 'react';
-import { useLocation } from 'wouter';
+import React, { useEffect, useState } from 'react';
 import { useAuth } from '../context/AuthContext';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { LogIn, Shield } from 'lucide-react';
-import Navbar from '../components/Navbar';
-import Footer from '../components/Footer';
+import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
+import { ShieldCheck, LockKeyhole } from 'lucide-react';
 
-const AdminLogin = () => {
-  const { user, loading, signIn, isAdmin } = useAuth();
-  const [, setLocation] = useLocation();
+const AdminLogin: React.FC = () => {
+  const { loginWithEmail } = useAuth();
+  const navigate = useNavigate();
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
   useEffect(() => {
-    if (user && isAdmin) {
-      setLocation('/admin/dashboard');
-    }
-  }, [user, isAdmin, setLocation]);
+    const handlePopState = () => {
+      navigate('/', { replace: true });
+    };
+    window.addEventListener('popstate', handlePopState);
+    return () => {
+      window.removeEventListener('popstate', handlePopState);
+    };
+  }, [navigate]);
 
-  if (loading) {
-    return (
-      <div className="min-h-screen bg-cream dark:bg-charcoal">
-        <Navbar />
-        <div className="container mx-auto px-4 py-16">
-          <div className="flex items-center justify-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-sky-blue dark:border-teal"></div>
-          </div>
-        </div>
-        <Footer />
-      </div>
-    );
-  }
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setError('');
+    try {
+      await loginWithEmail(email, password);
+      navigate('/admin/dashboard');
+    } catch (err) {
+      setError('Invalid email or password');
+    }
+  };
 
   return (
-    <div className="min-h-screen bg-cream dark:bg-charcoal">
-      <Navbar />
-      
-      <div className="container mx-auto px-4 py-16">
-        <div className="max-w-md mx-auto">
-          <Card className="shadow-xl">
-            <CardHeader className="text-center">
-              <div className="w-16 h-16 bg-sky-blue dark:bg-teal rounded-full flex items-center justify-center mx-auto mb-4">
-                <Shield className="w-8 h-8 text-white" />
-              </div>
-              <CardTitle className="text-2xl font-bold font-devanagari">
-                Admin Login
-              </CardTitle>
-              <CardDescription>
-                Sign in to access the admin dashboard and manage posts
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-6">
-              {user && !isAdmin && (
-                <div className="bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-700 rounded-lg p-4">
-                  <p className="text-yellow-800 dark:text-yellow-200 text-sm">
-                    You are signed in but don't have admin privileges. Please contact an administrator.
-                  </p>
-                </div>
-              )}
-
-              <Button
-                onClick={signIn}
-                className="w-full bg-sky-blue dark:bg-teal hover:bg-sky-blue/90 dark:hover:bg-teal/90 text-white"
-                disabled={loading}
-              >
-                <LogIn className="mr-2 h-4 w-4" />
-                Sign in with Google
-              </Button>
-
-              <div className="text-center text-sm text-gray-500 dark:text-gray-400">
-                <p>Only authorized admins can access the dashboard</p>
-              </div>
-            </CardContent>
-          </Card>
+    <div className="min-h-screen bg-background flex items-center justify-center px-4">
+      <motion.div
+        initial={{ opacity: 0, y: 40 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6 }}
+        className="w-full max-w-md p-8 bg-card rounded-2xl shadow-2xl border border-border text-card-foreground"
+      >
+        <div className="flex flex-col items-center mb-6">
+          <div className="bg-primary text-white p-3 rounded-full shadow-md mb-2">
+            <ShieldCheck size={28} />
+          </div>
+          <h2 className="text-2xl font-bold tracking-tight">Admin Portal</h2>
+          <p className="text-sm text-muted-foreground mt-1">Sign in to access your dashboard</p>
         </div>
-      </div>
 
-      <Footer />
+        <form onSubmit={handleSubmit} className="space-y-5">
+          <div>
+            <label htmlFor="email" className="block text-sm font-medium mb-1">
+              Email address
+            </label>
+            <input
+              id="email"
+              type="email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              placeholder="admin@example.com"
+              required
+              className="w-full px-4 py-2 rounded-lg border bg-input text-input-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+            />
+          </div>
+
+          <div>
+            <label htmlFor="password" className="block text-sm font-medium mb-1">
+              Password
+            </label>
+            <input
+              id="password"
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="••••••••"
+              required
+              className="w-full px-4 py-2 rounded-lg border bg-input text-input-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+            />
+          </div>
+
+          {error && <p className="text-sm text-red-500 text-center">{error}</p>}
+
+          <button
+            type="submit"
+            className="w-full flex justify-center items-center gap-2 py-2 px-4 bg-primary text-white font-medium rounded-lg hover:bg-primary/90 transition-all"
+          >
+            <LockKeyhole size={18} />
+            Sign In
+          </button>
+        </form>
+      </motion.div>
     </div>
   );
 };

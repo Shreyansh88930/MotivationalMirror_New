@@ -1,10 +1,11 @@
-import { Switch, Route } from "wouter";
+import { Routes, Route, Navigate } from "react-router-dom";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { queryClient } from "./lib/queryClient";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "./context/ThemeContext";
-import { AuthProvider } from "./context/AuthContext";
+import { AuthProvider, useAuth } from "./context/AuthContext";
+
 import NotFound from "@/pages/not-found";
 import Home from "./pages/Home";
 import AllPosts from "./pages/AllPosts";
@@ -13,19 +14,34 @@ import AdminLogin from "./pages/AdminLogin";
 import AdminDashboard from "./pages/AdminDashboard";
 import About from "./pages/About";
 import Contact from "./pages/Contact";
+import { Loader } from "./components/Loader";
 
-function Router() {
+function AppRouter() {
+  const { isAdmin, loading } = useAuth();
+
+
   return (
-    <Switch>
-      <Route path="/" component={Home} />
-      <Route path="/posts" component={AllPosts} />
-      <Route path="/posts/:postId" component={PostDetail} />
-      <Route path="/admin/login" component={AdminLogin} />
-      <Route path="/admin/dashboard" component={AdminDashboard} />
-      <Route path="/about" component={About} />
-      <Route path="/contact" component={Contact} />
-      <Route component={NotFound} />
-    </Switch>
+    <Routes>
+      <Route path="/" element={<Home />} />
+      <Route path="/allposts" element={<AllPosts />} />
+      <Route path="/posts/:postId" element={<PostDetail />} />
+      <Route path="/admin/login" element={<AdminLogin />} />
+      <Route
+        path="/admin/dashboard"
+        element={
+          loading ? (
+            <Loader />
+          ) : isAdmin ? (
+            <AdminDashboard />
+          ) : (
+            <Navigate to="/admin/login" replace />
+          )
+        }
+      />
+      <Route path="/about" element={<About />} />
+      <Route path="/contact" element={<Contact />} />
+      <Route path="*" element={<NotFound />} />
+    </Routes>
   );
 }
 
@@ -36,7 +52,7 @@ function App() {
         <AuthProvider>
           <TooltipProvider>
             <Toaster />
-            <Router />
+            <AppRouter />
           </TooltipProvider>
         </AuthProvider>
       </ThemeProvider>

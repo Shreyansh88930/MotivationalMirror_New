@@ -1,100 +1,239 @@
-import { initializeApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider, signInWithRedirect, getRedirectResult, signOut } from "firebase/auth";
-import { getFirestore, collection, addDoc, getDocs, doc, getDoc, updateDoc, deleteDoc, query, orderBy, where } from "firebase/firestore";
-import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
+import { initializeApp } from 'firebase/app';
+import {
+  getAuth,
+  signInWithEmailAndPassword,
+  signOut,
+} from 'firebase/auth';
+import {
+  getFirestore,
+  increment,
+  onSnapshot,
+  collection,
+  addDoc,
+  getDocs,
+  doc,
+  getDoc,
+  updateDoc,
+  deleteDoc,
+  query,
+  orderBy,
+  where,
+  QueryConstraint,
+  serverTimestamp,
+} from 'firebase/firestore';
+import {
+  getStorage,
+  ref,
+  uploadBytes,
+  getDownloadURL,
+} from 'firebase/storage';
 
+// --- Firebase Config ---
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY || "demo-key",
-  authDomain: `${import.meta.env.VITE_FIREBASE_PROJECT_ID || "demo-project"}.firebaseapp.com`,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID || "demo-project",
-  storageBucket: `${import.meta.env.VITE_FIREBASE_PROJECT_ID || "demo-project"}.firebasestorage.app`,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID || "demo-app-id",
+  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
+  authDomain: `${import.meta.env.VITE_FIREBASE_PROJECT_ID}.firebaseapp.com`,
+  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
+  storageBucket: `${import.meta.env.VITE_FIREBASE_PROJECT_ID}.appspot.com`,
+  appId: import.meta.env.VITE_FIREBASE_APP_ID,
 };
 
-const app = initializeApp(firebaseConfig);
+// --- Initialize Firebase Services ---
+export const app = initializeApp(firebaseConfig);
 export const auth = getAuth(app);
 export const db = getFirestore(app);
 export const storage = getStorage(app);
 
-const provider = new GoogleAuthProvider();
-
-export const signInWithGoogle = () => {
-  return signInWithRedirect(auth, provider);
+// --- Email/Password Sign In ---
+export const loginWithEmailAndPassword = async (
+  email: string,
+  password: string
+) => {
+  return await signInWithEmailAndPassword(auth, email, password);
 };
 
-export const handleAuthRedirect = () => {
-  return getRedirectResult(auth);
+export const signOutUser = () => signOut(auth);
+
+// --- Admin Configuration ---
+const ADMIN_EMAILS = ['admin1@gmail.com'];
+
+export const isAdminEmail = (email?: string | null): boolean => {
+  if (!email) return false;
+  return ADMIN_EMAILS.includes(email.toLowerCase());
 };
 
-export const signOutUser = () => {
-  return signOut(auth);
-};
-
-// Firestore helpers
-export const createPost = async (postData: {
+// --- Firestore Helpers ---
+export interface PostData {
   title?: string;
   content?: string;
-  contentType: string;
+  contentType: 'text' | 'image' | 'video';
   mediaUrl?: string;
   mediaCaption?: string;
   authorName: string;
-}) => {
-  const postsCollection = collection(db, "posts");
-  return await addDoc(postsCollection, {
-    ...postData,
-    createdAt: new Date(),
-    updatedAt: new Date(),
-  });
+  language?: 'en' | 'hi';
+}
+type Filters = {
+  hostFilter?: string;
+  typeFilter?: string;
+  sortBy?: 'popular' | 'trending' | 'latest';
 };
 
-export const getPosts = async (hostFilter?: string, typeFilter?: string) => {
-  const postsCollection = collection(db, "posts");
-  let q = query(postsCollection, orderBy("createdAt", "desc"));
-  
-  if (hostFilter) {
-    q = query(postsCollection, where("authorName", "==", hostFilter), orderBy("createdAt", "desc"));
+export const createPost = async (postData: PostData) => {
+  try {
+    const postsCollection = collection(db, 'posts');
+    const docRef = await addDoc(postsCollection, {
+      ...postData,
+      createdAt: serverTimestamp(),
+      updatedAt: serverTimestamp(),
+    });
+    return docRef;
+  } catch (error) {
+    console.error("Error creating post:", error);
+    throw error;
   }
-  
-  if (typeFilter) {
-    q = query(postsCollection, where("contentType", "==", typeFilter), orderBy("createdAt", "desc"));
-  }
-  
-  const querySnapshot = await getDocs(q);
-  return querySnapshot.docs.map(doc => ({
-    id: doc.id,
-    ...doc.data(),
-  }));
 };
+
+export const getPosts = async (filters = {}) => {
+  const { hostFilter, typeFilter, sortBy } = filters;
+  const postsRef = collection(db, 'posts');
+  let constraints = [];
+
+  if (hostFilter) constraints.push(where('host', '==', hostFilter));
+  if (typeFilter) constraints.push(where('contentType', '==', typeFilter));
+
+  switch (sortBy) {
+    case 'popular':
+      constraints.push(orderBy('likes', 'desc'));
+      break;
+    case 'trending':
+      constraints.push(orderBy('commentCount', 'desc'));
+      break;
+    case 'latest':
+    default:
+      constraints.push(orderBy('createdAt', 'desc'));
+      break;
+  }
+
+  const q = query(postsRef, ...constraints);
+  const snapshot = await getDocs(q);
+  return snapshot.docs.map((doc) => ({ id: doc.id, ...doc.data() }));
+};
+
+
 
 export const getPost = async (postId: string) => {
-  const postDoc = doc(db, "posts", postId);
-  const postSnap = await getDoc(postDoc);
-  
-  if (postSnap.exists()) {
-    return {
-      id: postSnap.id,
-      ...postSnap.data(),
-    };
+  try {
+    const postDoc = doc(db, 'posts', postId);
+    const postSnap = await getDoc(postDoc);
+
+    return postSnap.exists()
+      ? { id: postSnap.id, ...postSnap.data() }
+      : null;
+  } catch (error) {
+    console.error("Error fetching post:", error);
+    throw error;
   }
-  return null;
 };
 
-export const updatePost = async (postId: string, postData: any) => {
-  const postDoc = doc(db, "posts", postId);
-  return await updateDoc(postDoc, {
-    ...postData,
-    updatedAt: new Date(),
-  });
+export const updatePost = async (
+  postId: string,
+  postData: Partial<PostData>
+) => {
+  try {
+    const postDoc = doc(db, 'posts', postId);
+    return await updateDoc(postDoc, {
+      ...postData,
+      updatedAt: serverTimestamp(),
+    });
+  } catch (error) {
+    console.error("Error updating post:", error);
+    throw error;
+  }
 };
 
 export const deletePost = async (postId: string) => {
-  const postDoc = doc(db, "posts", postId);
-  return await deleteDoc(postDoc);
+  try {
+    const postDoc = doc(db, 'posts', postId);
+    return await deleteDoc(postDoc);
+  } catch (error) {
+    console.error("Error deleting post:", error);
+    throw error;
+  }
 };
 
-// Storage helpers
-export const uploadMedia = async (file: File, path: string) => {
-  const storageRef = ref(storage, path);
-  const snapshot = await uploadBytes(storageRef, file);
-  return await getDownloadURL(snapshot.ref);
+// --- Firebase Storage Upload (if still needed) ---
+export const uploadMediaToFirebase = async (file: File, path: string) => {
+  try {
+    const storageRef = ref(storage, path);
+    const snapshot = await uploadBytes(storageRef, file);
+    return await getDownloadURL(snapshot.ref);
+  } catch (error) {
+    console.error("Error uploading to Firebase Storage:", error);
+    throw error;
+  }
+};
+
+export const likePost = async (postId: string) => {
+  const postRef = doc(db, 'posts', postId);
+  await updateDoc(postRef, {
+    likes: increment(1),
+  });
+};
+export const dislikePost = async (postId: string) => {
+  const postRef = doc(db, 'posts', postId);
+  await updateDoc(postRef, {
+    likes: increment(-1),
+  });
+};
+
+export const fetchLikes = async (postId: string) => {
+  const postRef = doc(db, 'posts', postId);
+  const snapshot = await getDoc(postRef);
+  return snapshot.exists() ? snapshot.data().likes || 0 : 0;
+};
+
+export const addCommentToPost = async (postId: string, text: string, authorName: string) => {
+  const commentsRef = collection(db, 'posts', postId, 'comments');
+  await addDoc(commentsRef, {
+    text,
+    authorName,
+    createdAt: new Date(),
+  });
+};
+
+export const fetchComments = (postId: string, callback: Function) => {
+  const commentsRef = collection(db, 'posts', postId, 'comments');
+  return onSnapshot(commentsRef, (snapshot) => {
+    const comments = snapshot.docs.map(doc => ({
+      id: doc.id,
+      ...doc.data(),
+    }));
+    callback(comments);
+  });
+};
+
+// --- Cloudinary Upload (optional replacement) ---
+export const uploadMediaToCloudinary = async (file: File): Promise<string> => {
+  const CLOUDINARY_URL = `https://api.cloudinary.com/v1_1/${
+    import.meta.env.VITE_CLOUDINARY_CLOUD_NAME
+  }/auto/upload`;
+  const UPLOAD_PRESET = import.meta.env.VITE_CLOUDINARY_UPLOAD_PRESET;
+
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('upload_preset', UPLOAD_PRESET);
+
+  try {
+    const res = await fetch(CLOUDINARY_URL, {
+      method: 'POST',
+      body: formData,
+    });
+
+    if (!res.ok) throw new Error("Cloudinary upload failed");
+
+    const data = await res.json();
+    return data.secure_url;
+  } catch (error) {
+    console.error("Error uploading to Cloudinary:", error);
+    throw error;
+  }
 };
