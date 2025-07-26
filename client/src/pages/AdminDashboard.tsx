@@ -12,7 +12,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Plus, Edit, Trash2, Image, Video, FileText, Upload } from 'lucide-react';
 import Navbar from '../components/Navbar';
 import Footer from '../components/Footer';
-import { createPost, deletePost, updatePost, getAllPosts, uploadMediaToCloudinary } from "../../../api/posts";
+import { createPost, deletePost, updatePost, getAllPosts, uploadMediaToCloudinary } from "../../../functions/api/posts";
 import { motion, AnimatePresence } from 'framer-motion'; // animation
 import { Loader2 } from 'lucide-react'; // spinning icon
 
