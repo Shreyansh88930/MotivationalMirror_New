@@ -5,7 +5,7 @@
   "license": "MIT",
   "scripts": {
   "dev": "concurrently \"vite\" \"tsx api/index.ts\"",
-  "build": "vite build && esbuild functions/api/index.ts --platform=node --bundle --format=esm --outdir=dist",
+  "build": "vite build && esbuild functions/api/index.ts --platform=node --bundle --format=esm --outdir=dist --external:@babel/preset-typescript --external:lightningcss --external:lightningcss/package.json",
   "start": "NODE_ENV=production node dist/index.js"
 },
   "dependencies": {
