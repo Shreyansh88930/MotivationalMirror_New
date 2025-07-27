@@ -47,5 +47,4 @@ server.use((err: any, _req: Request, res: Response, _next: NextFunction) => {
 
 serveStatic(server);
 
-// ✅ Export with a different name
 export const api = functions.https.onRequest(server);
