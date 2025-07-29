@@ -1,26 +1,36 @@
 {
-  "version": 2,
   "builds": [
     {
-      "src": "client/vite.config.ts",
+      "src": "client/index.html",
       "use": "@vercel/static-build",
       "config": {
-        "distDir": "client/dist"
+        "distDir": "dist/client"
       }
     },
     {
-      "src": "api/**/*.ts",
-      "use": "@vercel/node"
+      "src": "functions/api/index.ts",
+      "use": "@vercel/node",
+      "config": {
+        "includeFiles": ["functions/**"]
+      }
     }
   ],
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "/api/$1"
+      "dest": "/functions/api/index.ts"
+    },
+    {
+      "src": "/assets/(.*)",
+      "dest": "/dist/client/assets/$1"
+    },
+    {
+      "src": "/(.*\\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot|json|webmanifest))",
+      "dest": "/dist/client/$1"
     },
     {
       "src": "/(.*)",
-      "dest": "/client/dist/index.html"
+      "dest": "/dist/client/index.html"
     }
   ]
 }
