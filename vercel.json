@@ -1,28 +1,29 @@
-{
-  "functions": {
-    "api/index.ts": {
-      "runtime": "edge",
-      "entrypoint": "functions/api/index.ts"
+    {
+      "functions": {
+        "api/index.ts": {
+          "runtime": "nodejs20.x", 
+          "entrypoint": "functions/api/index.ts"
+        }
+      },
+      "buildCommand": "npm run build",
+      "outputDirectory": "dist/client",
+      "routes": [
+        {
+          "src": "/api/(.*)",
+          "dest": "api/index.ts"
+        },
+        {
+          "src": "/assets/(.*)",
+          "dest": "/assets/$1"
+        },
+        {
+          "src": "/(.*\\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot|json|webmanifest))",
+          "dest": "/$1"
+        },
+        {
+          "src": "/(.*)",
+          "dest": "/index.html"
+        }
+      ]
     }
-  },
-  "buildCommand": "npm run build",
-  "outputDirectory": "dist/client",
-  "routes": [
-    {
-      "src": "/api/(.*)",
-      "dest": "api/index.ts"
-    },
-    {
-      "src": "/assets/(.*)",
-      "dest": "/assets/$1"
-    },
-    {
-      "src": "/(.*\\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot|json|webmanifest))",
-      "dest": "/$1"
-    },
-    {
-      "src": "/(.*)",
-      "dest": "/index.html"
-    }
-  ]
-}
+    
