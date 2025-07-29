@@ -1,11 +1,11 @@
 {
   "builds": [
     {
-      "src": "package.json",  <-- CHANGE THIS LINE: Point to the root package.json
+      "src": "package.json",
       "use": "@vercel/static-build",
       "config": {
         "distDir": "dist/client",
-        "buildCommand": "npm run build:client"  <-- ADD THIS LINE: Explicitly tell Vercel the build command
+        "buildCommand": "npm run build:client"
       }
     },
     {
