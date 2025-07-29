@@ -1,37 +1,28 @@
 {
-  "builds": [
-    {
-      "src": "package.json",
-      "use": "@vercel/static-build",
-      "config": {
-        "distDir": "dist/client",
-        "buildCommand": "npm run build:client"
-      }
-    },
-    {
-      "src": "functions/api/index.ts",
-      "use": "@vercel/node",
-      "config": {
-        "includeFiles": ["functions/**"]
-      }
+  "functions": {
+    "api/index.ts": {
+      "runtime": "edge",
+      "entrypoint": "functions/api/index.ts"
     }
-  ],
+  },
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist/client",
   "routes": [
     {
       "src": "/api/(.*)",
-      "dest": "/functions/api/index.ts"
+      "dest": "api/index.ts"
     },
     {
       "src": "/assets/(.*)",
-      "dest": "/dist/client/assets/$1"
+      "dest": "/assets/$1"
     },
     {
       "src": "/(.*\\.(js|css|png|jpg|jpeg|gif|svg|ico|woff|woff2|ttf|eot|json|webmanifest))",
-      "dest": "/dist/client/$1"
+      "dest": "/$1"
     },
     {
       "src": "/(.*)",
-      "dest": "/dist/client/index.html"
+      "dest": "/index.html"
     }
   ]
 }
